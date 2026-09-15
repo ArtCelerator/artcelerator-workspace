@@ -79,7 +79,7 @@ export function Sidebar({ role = 'TEAM' }: { role?: WorkspaceRole }) {
                 </h3>
                 <div className="space-y-1">
                   {allowedItems.map((item) => {
-                    const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                    const isActive = pathname === item.href || (item.href !== '/' && item.href !== '/settings' && pathname.startsWith(item.href + '/'));
                     return (
                       <Link
                         key={item.name}
