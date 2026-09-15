@@ -11,7 +11,7 @@ export function processTemplate(template: string, data: Record<string, any>): st
     const [path, filter] = expression.split('|');
     const keys = path.split('.');
     
-    let value = data;
+    let value: any = data;
     for (const key of keys) {
       if (value == null) break;
       value = value[key];
