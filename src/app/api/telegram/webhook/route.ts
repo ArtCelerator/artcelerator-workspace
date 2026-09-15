@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextResponse } from 'next/server';
 import { bot, sendMessage } from '@/lib/telegram';
 import prisma from '@/lib/prisma';
