@@ -26,7 +26,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { role } = await getOrCreateDefaultWorkspace(session.user.id);
-    if (role === 'EDITOR') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (role === 'TEAM') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const body = await req.json();
     const validated = projectMemberSchema.parse(body);
@@ -53,7 +53,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { role } = await getOrCreateDefaultWorkspace(session.user.id);
-    if (role === 'EDITOR') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (role === 'TEAM') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId');

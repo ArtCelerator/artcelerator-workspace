@@ -19,12 +19,12 @@ export async function getOrCreateDefaultWorkspace(userId: string) {
       slug,
       ownerId: userId,
       members: {
-        create: { userId, role: 'OWNER' }
+        create: { userId, role: 'ADMIN' }
       }
     }
   });
   
   await seedDefaultTemplates(newWorkspace.id);
 
-  return { workspace: newWorkspace, role: 'OWNER' as const };
+  return { workspace: newWorkspace, role: 'ADMIN' as const };
 }

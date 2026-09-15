@@ -42,7 +42,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     } else if (newStatus === 'DRAFTING') {
       await notifyAssigned({ contentId: content.id, type: 'CONTENT_REJECTED', priority: 'IMPORTANT', title: 'Konten Direvisi', message: `Konten "${content.title}" memerlukan revisi.` });
     } else if (newStatus === 'REVIEW') {
-      await notifyRole({ workspaceId: workspace.id, role: ['OWNER', 'ADMIN'], type: 'CONTENT_REVIEW_REQUESTED', title: 'Review Dibutuhkan', message: `Konten "${content.title}" menunggu review Anda.`, link: `/contents/${content.id}` });
+      await notifyRole({ workspaceId: workspace.id, role: ['ADMIN', 'CREATIVE_DIRECTOR'], type: 'CONTENT_REVIEW_REQUESTED', title: 'Review Dibutuhkan', message: `Konten "${content.title}" menunggu review Anda.`, link: `/contents/${content.id}` });
     }
 
     await prisma.activityLog.create({

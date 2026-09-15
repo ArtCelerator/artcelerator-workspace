@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { workspace, role } = await getOrCreateDefaultWorkspace(session.user.id);
-    if (role !== 'OWNER' && role !== 'ADMIN') {
+    if (role !== 'ADMIN' && role !== 'CREATIVE_DIRECTOR') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

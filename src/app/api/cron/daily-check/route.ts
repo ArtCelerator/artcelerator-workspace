@@ -33,7 +33,7 @@ export async function GET(req: Request) {
     });
     for (const c of reminderContents) {
       await notifyAssigned({ contentId: c.id, type: 'CONTENT_REMINDER', priority: 'IMPORTANT', title: 'Pengingat H-1', message: `Konten "${c.title}" dijadwalkan tayang besok.` });
-      await notifyRole({ workspaceId: c.workspaceId, role: 'ADMIN', type: 'CONTENT_REMINDER', title: 'Pengingat H-1', message: `Konten "${c.title}" dijadwalkan tayang besok.`, link: `/contents/${c.id}` });
+      await notifyRole({ workspaceId: c.workspaceId, role: 'CREATIVE_DIRECTOR', type: 'CONTENT_REMINDER', title: 'Pengingat H-1', message: `Konten "${c.title}" dijadwalkan tayang besok.`, link: `/contents/${c.id}` });
     }
 
     // 3 & 4. Invoice Due & Overdue
@@ -43,9 +43,9 @@ export async function GET(req: Request) {
       const dueDate = new Date(inv.dueDate);
       dueDate.setHours(0,0,0,0);
       if (dueDate.getTime() === today.getTime()) {
-        await notifyRole({ workspaceId: inv.workspaceId, role: ['OWNER', 'ADMIN'], type: 'INVOICE_DUE', priority: 'URGENT', title: 'Invoice Jatuh Tempo', message: `Invoice ${inv.invoiceNo} jatuh tempo hari ini.`, link: '/finance' });
+        await notifyRole({ workspaceId: inv.workspaceId, role: ['ADMIN', 'CREATIVE_DIRECTOR'], type: 'INVOICE_DUE', priority: 'URGENT', title: 'Invoice Jatuh Tempo', message: `Invoice ${inv.invoiceNo} jatuh tempo hari ini.`, link: '/finance' });
       } else if (dueDate.getTime() < today.getTime()) {
-        await notifyRole({ workspaceId: inv.workspaceId, role: ['OWNER', 'ADMIN'], type: 'INVOICE_OVERDUE', priority: 'URGENT', title: 'Invoice Menunggak', message: `Invoice ${inv.invoiceNo} telah menunggak.`, link: '/finance' });
+        await notifyRole({ workspaceId: inv.workspaceId, role: ['ADMIN', 'CREATIVE_DIRECTOR'], type: 'INVOICE_OVERDUE', priority: 'URGENT', title: 'Invoice Menunggak', message: `Invoice ${inv.invoiceNo} telah menunggak.`, link: '/finance' });
       }
     }
 
@@ -56,7 +56,7 @@ export async function GET(req: Request) {
       where: { contractEnd: { gte: today, lte: in30Days }, status: 'ACTIVE' }
     });
     for (const client of clients) {
-      await notifyRole({ workspaceId: client.workspaceId, role: ['OWNER', 'ADMIN'], type: 'CONTRACT_EXPIRING', title: 'Kontrak Akan Habis', message: `Kontrak klien ${client.name} akan habis pada ${client.contractEnd?.toLocaleDateString('id-ID')}.`, link: `/clients/${client.id}` });
+      await notifyRole({ workspaceId: client.workspaceId, role: ['ADMIN', 'CREATIVE_DIRECTOR'], type: 'CONTRACT_EXPIRING', title: 'Kontrak Akan Habis', message: `Kontrak klien ${client.name} akan habis pada ${client.contractEnd?.toLocaleDateString('id-ID')}.`, link: `/clients/${client.id}` });
     }
 
     // 6. Send Queued Telegrams

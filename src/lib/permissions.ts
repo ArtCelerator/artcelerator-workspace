@@ -6,14 +6,15 @@ export function canChangeStatus(
   newStatus: ContentStatus,
   isAssignedToUser: boolean
 ): boolean {
-  if (role === 'OWNER') return true;
+  if (role === 'ADMIN') return true;
 
-  if (role === 'ADMIN') {
+  if (role === 'CREATIVE_DIRECTOR') {
+    // Creative Director cannot jump straight from drafting to published without review
     if (currentStatus === 'DRAFTING' && newStatus === 'PUBLISHED') return false;
     return true;
   }
 
-  if (role === 'EDITOR') {
+  if (role === 'TEAM') {
     if (!isAssignedToUser) return false;
     
     const allowedTransitions: Record<ContentStatus, ContentStatus[]> = {
@@ -38,9 +39,9 @@ export function canEditContent(
   contentStatus: ContentStatus,
   userId: string
 ): boolean {
-  if (role === 'OWNER' || role === 'ADMIN') return true;
+  if (role === 'ADMIN' || role === 'CREATIVE_DIRECTOR') return true;
 
-  if (role === 'EDITOR') {
+  if (role === 'TEAM') {
     return (
       contentAssignedToId === userId &&
       contentStatus !== 'REVIEW' &&
@@ -53,7 +54,7 @@ export function canEditContent(
 }
 
 export function canDeleteContent(role: WorkspaceRole): boolean {
-  return role === 'OWNER' || role === 'ADMIN';
+  return role === 'ADMIN' || role === 'CREATIVE_DIRECTOR';
 }
 
 export function canViewContent(
@@ -62,9 +63,9 @@ export function canViewContent(
   contentStatus: ContentStatus,
   userId: string
 ): boolean {
-  if (role === 'OWNER' || role === 'ADMIN') return true;
+  if (role === 'ADMIN' || role === 'CREATIVE_DIRECTOR') return true;
 
-  if (role === 'EDITOR') {
+  if (role === 'TEAM') {
     return contentAssignedToId === userId || contentStatus === 'PUBLISHED';
   }
 

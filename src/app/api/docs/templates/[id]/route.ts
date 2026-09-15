@@ -11,7 +11,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { workspace, role } = await getOrCreateDefaultWorkspace(session.user.id);
-    if (role === 'EDITOR') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (role === 'TEAM') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const body = await req.json();
     const variables = extractVariables(body.content || '');
@@ -39,7 +39,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { workspace, role } = await getOrCreateDefaultWorkspace(session.user.id);
-    if (role === 'EDITOR') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (role === 'TEAM') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await prisma.docTemplate.update({
       where: { id: params.id, workspaceId: workspace.id },

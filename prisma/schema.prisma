@@ -55,9 +55,9 @@ enum Priority {
 }
 
 enum WorkspaceRole {
-  OWNER
   ADMIN
-  EDITOR
+  CREATIVE_DIRECTOR
+  TEAM
 }
 
 enum CampaignStatus {
@@ -288,7 +288,7 @@ model WorkspaceMember {
   id          String        @id @default(cuid())
   workspaceId String        @map("workspace_id")
   userId      String        @map("user_id")
-  role        WorkspaceRole @default(EDITOR)
+  role        WorkspaceRole @default(TEAM)
   invitedAt   DateTime      @default(now()) @map("invited_at")
   joinedAt    DateTime?     @map("joined_at")
 

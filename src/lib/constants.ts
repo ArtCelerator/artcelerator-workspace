@@ -2,12 +2,12 @@ export type ContentStatus = 'IDEA' | 'DRAFTING' | 'REVIEW' | 'SCHEDULED' | 'PUBL
 export type ContentType = 'BLOG' | 'VIDEO' | 'INFOGRAPHIC' | 'SOCIAL_POST' | 'STORY' | 'REEL' | 'PODCAST' | 'NEWSLETTER' | 'CAROUSEL' | 'THREAD';
 export type Platform = 'INSTAGRAM' | 'TIKTOK' | 'YOUTUBE' | 'TWITTER' | 'LINKEDIN' | 'FACEBOOK' | 'THREADS' | 'PINTEREST' | 'BLOG' | 'EMAIL';
 export type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
-export type WorkspaceRole = 'OWNER' | 'ADMIN' | 'EDITOR';
+export type WorkspaceRole = 'ADMIN' | 'CREATIVE_DIRECTOR' | 'TEAM';
 
 export const ROLE_LABELS: Record<WorkspaceRole, string> = {
-  OWNER: 'Manajemen',
-  ADMIN: 'Creative Director',
-  EDITOR: 'Team'
+  ADMIN: 'Admin',
+  CREATIVE_DIRECTOR: 'Creative Director',
+  TEAM: 'Team'
 };
 
 export const STATUS_LABELS: Record<ContentStatus, string> = {

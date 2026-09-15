@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     if (!session?.user) return NextResponse.redirect(new URL('/login', req.url));
 
     const { workspace, role } = await getOrCreateDefaultWorkspace(session.user.id);
-    if (role !== 'OWNER' && role !== 'ADMIN') {
+    if (role !== 'ADMIN' && role !== 'CREATIVE_DIRECTOR') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

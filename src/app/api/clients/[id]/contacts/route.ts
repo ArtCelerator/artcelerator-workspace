@@ -25,7 +25,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const { role } = await getOrCreateDefaultWorkspace(session.user.id);
-    if (role === 'EDITOR') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (role === 'TEAM') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const body = await req.json();
     const validated = clientContactSchema.parse(body);

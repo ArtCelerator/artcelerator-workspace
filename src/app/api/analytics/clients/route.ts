@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { workspace, role } = await getOrCreateDefaultWorkspace(session.user.id);
-    if (role === 'EDITOR') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (role === 'TEAM') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const clients = await prisma.client.findMany({
       where: { workspaceId: workspace.id },

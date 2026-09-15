@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     if (!session?.user) return new Response('Unauthorized', { status: 401 });
 
     const { workspace, role } = await getOrCreateDefaultWorkspace(session.user.id);
-    if (role !== 'OWNER' && role !== 'ADMIN') return new Response('Forbidden', { status: 403 });
+    if (role !== 'ADMIN' && role !== 'CREATIVE_DIRECTOR') return new Response('Forbidden', { status: 403 });
 
     const { searchParams } = new URL(req.url);
     const startDate = searchParams.get('startDate');

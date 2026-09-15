@@ -29,7 +29,7 @@ export async function GET(req: Request) {
       status: { not: 'ARCHIVED' }
     };
 
-    if (role === 'EDITOR') {
+    if (role === 'TEAM') {
       whereClause.OR = [
         { assignedToId: session.user.id },
         { status: 'PUBLISHED' }
