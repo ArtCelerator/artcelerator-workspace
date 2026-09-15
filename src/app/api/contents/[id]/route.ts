@@ -20,7 +20,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         assignedTo: { select: { id: true, name: true, image: true } },
         campaign: true,
         client: true,
-        metrics: { orderBy: { recordedAt: 'desc' }, take: 1 }
+        metrics: { orderBy: { recordedAt: 'desc' }, take: 1 },
+        driveFolders: true,
+        generatedDocs: true
       }
     });
 

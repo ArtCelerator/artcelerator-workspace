@@ -80,6 +80,49 @@ export async function POST(req: Request) {
         slug,
       }
     });
+    // Auto-generate Drive folder and Docs
+    try {
+      const url = new URL(req.url);
+      const cookie = req.headers.get('cookie') || '';
+      
+      // 1. Create Folder
+      const folderRes = await fetch(`${url.origin}/api/drive/folders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
+        body: JSON.stringify({ contentId: content.id, projectId: content.projectId, clientId: content.clientId })
+      });
+      
+      if (folderRes.ok) {
+        // 2. Fetch Brief Template
+        const template = await prisma.docTemplate.findFirst({
+          where: { workspaceId: workspace.id, type: 'brief' }
+        });
+        
+        if (template) {
+          // Create Brief
+          fetch(`${url.origin}/api/docs/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
+            body: JSON.stringify({ templateId: template.id, contentId: content.id, projectId: content.projectId, clientId: content.clientId })
+          }).catch(e => console.error('Failed to gen brief:', e));
+          
+          
+          const refTemplate = await prisma.docTemplate.findFirst({
+            where: { workspaceId: workspace.id, type: 'referensi' }
+          });
+          if (refTemplate) {
+            fetch(`${url.origin}/api/docs/generate`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
+              body: JSON.stringify({ templateId: refTemplate.id, contentId: content.id, projectId: content.projectId, clientId: content.clientId })
+            }).catch(e => console.error('Failed to gen ref:', e));
+          }
+        }
+      }
+    } catch(e) {
+      console.error('Content auto-create error:', e);
+    }
+
 
     await prisma.activityLog.create({
       data: {

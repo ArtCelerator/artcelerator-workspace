@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/content/status-badge';
+import { ExternalLink, Folder, FileText } from 'lucide-react';
 import { MetricsForm } from '@/components/content/metrics-form';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { formatDateShort } from '@/lib/utils';
@@ -113,7 +114,40 @@ export default function ContentDetailPage({ params }: { params: { id: string } }
               <p className="text-xs text-zinc-500">Akan membuat Google Doc baru di folder klien berdasarkan template Brief.</p>
             </div>
           </CardContent>
+        </
+      {/* Drive Assets */}
+      {(content.driveFolders?.length > 0 || content.generatedDocs?.length > 0) && (
+        <Card className="mt-6 border-blue-100 shadow-sm">
+          <CardHeader className="bg-blue-50/50 pb-4">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Folder className="w-5 h-5 text-blue-500" /> Google Drive Assets
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {content.driveFolders?.map((f: any) => (
+                <a key={f.id} href={f.folderUrl} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <Folder className="w-5 h-5 text-blue-400 fill-blue-100" />
+                    <span className="font-medium text-sm text-zinc-700">{f.name}</span>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-zinc-400" />
+                </a>
+              ))}
+              {content.generatedDocs?.map((d: any) => (
+                <a key={d.id} href={d.docUrl} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <FileText className="w-5 h-5 text-blue-500" />
+                    <span className="font-medium text-sm text-zinc-700">{d.title}</span>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-zinc-400" />
+                </a>
+              ))}
+            </div>
+          </CardContent>
         </Card>
+      )}
+Card>
       </div>
 
       <div className="mt-6">

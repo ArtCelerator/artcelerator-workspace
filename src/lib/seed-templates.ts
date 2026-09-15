@@ -50,6 +50,14 @@ export async function seedDefaultTemplates(workspaceId: string) {
     data: [
       {
         workspaceId,
+        name: 'Template Referensi Kosong',
+        type: 'referensi',
+        content: 'Silakan isi dengan referensi, moodboard, atau tautan terkait konten ini.',
+        variables: []
+      },
+
+      {
+        workspaceId,
         name: 'Brief Konten Default',
         type: 'brief',
         content: DEFAULT_BRIEF,

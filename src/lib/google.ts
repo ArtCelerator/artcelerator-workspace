@@ -109,3 +109,24 @@ export function formatContentForSheet(content: any) {
     reach
   ];
 }
+
+export async function createDriveFolder(accessToken: string, name: string, parentId?: string) {
+  const drive = getDriveClient(accessToken);
+  const fileMetadata: any = {
+    name,
+    mimeType: 'application/vnd.google-apps.folder',
+  };
+  if (parentId) {
+    fileMetadata.parents = [parentId];
+  }
+  
+  const res = await drive.files.create({
+    requestBody: fileMetadata,
+    fields: 'id, webViewLink',
+  });
+  
+  return {
+    id: res.data.id!,
+    url: res.data.webViewLink!
+  };
+}

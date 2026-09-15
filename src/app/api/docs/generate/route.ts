@@ -62,9 +62,12 @@ export async function POST(req: Request) {
 
     // Determine folder
     let folderId = undefined;
-    if (clientId || projectId) {
+    if (contentId) {
+      const folder = await prisma.driveFolder.findFirst({ where: { contentId, parentId: { not: null } } });
+      if (folder) folderId = folder.folderId;
+    } else if (projectId || clientId) {
       const searchId = projectId || clientId;
-      const folder = await prisma.driveFolder.findFirst({ where: { OR: [{ projectId: searchId }, { clientId: searchId }] } });
+      const folder = await prisma.driveFolder.findFirst({ where: { OR: [{ projectId: searchId }, { clientId: searchId }], contentId: null } });
       if (folder) folderId = folder.folderId;
     }
 

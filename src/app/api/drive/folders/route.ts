@@ -43,16 +43,7 @@ export async function POST(req: Request) {
         data: { workspaceId: workspace.id, clientId, folderId: cFolder.id, folderUrl: cFolder.url, name: client.name, path: `/${client.name}`, parentId: rootFolder.id }
       });
       
-      const f1 = await createFolder('Contracts', cFolder.id);
-      const f2 = await createFolder('Shared', cFolder.id);
       
-      await prisma.driveFolder.createMany({
-        data: [
-          { workspaceId: workspace.id, clientId, folderId: f1.id, folderUrl: f1.url, name: 'Contracts', path: `/${client.name}/Contracts`, parentId: dbClient.id },
-          { workspaceId: workspace.id, clientId, folderId: f2.id, folderUrl: f2.url, name: 'Shared', path: `/${client.name}/Shared`, parentId: dbClient.id }
-        ]
-      });
-
       return NextResponse.json({ success: true, folderId: cFolder.id });
     }
 
@@ -69,15 +60,33 @@ export async function POST(req: Request) {
         data: { workspaceId: workspace.id, projectId, clientId, folderId: pFolder.id, folderUrl: pFolder.url, name: project.name, path: `${clientFolder.path}/${project.name}`, parentId: clientFolder.id }
       });
 
-      const subFolders = ['Briefs', 'Assets', 'Drafts', 'Finals', 'Reports'];
+      return NextResponse.json({ success: true, folderId: pFolder.id });
+    }
+
+    
+    if (body.contentId && projectId) {
+      // Create Content folders
+      const content = await prisma.content.findUnique({ where: { id: body.contentId } });
+      if (!content) throw new Error('Content not found');
+      
+      const projectFolder = await prisma.driveFolder.findFirst({ where: { projectId, parentId: { not: null }, contentId: null } });
+      if (!projectFolder) throw new Error('Project folder not found');
+
+      const cFolder = await createFolder(content.title, projectFolder.folderId);
+      const dbContent = await prisma.driveFolder.create({
+        data: { workspaceId: workspace.id, projectId, clientId, contentId: content.id, folderId: cFolder.id, folderUrl: cFolder.url, name: content.title, path: `${projectFolder.path}/${content.title}`, parentId: projectFolder.id }
+      });
+
+      const subFolders = ['Assets', 'Output'];
       for (const sub of subFolders) {
-        const subF = await createFolder(sub, pFolder.id);
+        const subF = await createFolder(sub, cFolder.id);
         await prisma.driveFolder.create({
-          data: { workspaceId: workspace.id, projectId, clientId, folderId: subF.id, folderUrl: subF.url, name: sub, path: `${dbProj.path}/${sub}`, parentId: dbProj.id }
+          data: { workspaceId: workspace.id, projectId, clientId, contentId: content.id, folderId: subF.id, folderUrl: subF.url, name: sub, path: `${dbContent.path}/${sub}`, parentId: dbContent.id }
         });
       }
-
-      return NextResponse.json({ success: true, folderId: pFolder.id });
+      
+      // We return the content folder ID so the caller can create docs inside it
+      return NextResponse.json({ success: true, folderId: cFolder.id, dbFolderId: dbContent.id });
     }
 
     return NextResponse.json({ error: 'Invalid parameters' }, { status: 400 });

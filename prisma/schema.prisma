@@ -357,6 +357,7 @@ model Content {
 
   metrics       ContentMetric[]
   tags          ContentTag[]
+  driveFolders  DriveFolder[]
   generatedDocs GeneratedDoc[]
   driveFiles    DriveFile[]
   activities    ActivityLog[]
@@ -759,6 +760,7 @@ model DriveFolder {
   folderUrl       String   @map("folder_url")
   name            String
   path            String
+  contentId       String?  @map("content_id")
   parentId        String?  @map("parent_id")
   sharedWith      String?  @map("shared_with")
   sharePermission String?  @map("share_permission")
@@ -767,6 +769,7 @@ model DriveFolder {
   workspace Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   client    Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
   project   Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  content   Content?      @relation(fields: [contentId], references: [id], onDelete: SetNull)
   parent    DriveFolder?  @relation("FolderTree", fields: [parentId], references: [id], onDelete: SetNull)
   children  DriveFolder[] @relation("FolderTree")
   files     DriveFile[]
