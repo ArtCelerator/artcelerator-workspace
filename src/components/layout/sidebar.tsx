@@ -9,6 +9,7 @@ const navigation = [
   { name: 'Kalender', href: '/calendar', icon: '📅' },
   { name: 'Pipeline', href: '/pipeline', icon: '🔄' },
   { name: 'Konten', href: '/contents', icon: '📝' },
+  { name: 'Pilar Konten', href: '/pillars', icon: '🏛️' },
   { name: 'Klien', href: '/clients', icon: '👥' },
   { name: 'Proyek', href: '/projects', icon: '📁' },
   { name: 'Keuangan', href: '/finance', icon: '💰', role: 'ADMIN' },
@@ -17,12 +18,6 @@ const navigation = [
   { name: 'Google Docs', href: '/docs', icon: '📄', role: 'ADMIN' },
   { name: 'Integrasi', href: '/settings/integrations', icon: '🔗', role: 'ADMIN' },
   { name: 'Notifikasi', href: '/settings/notifications', icon: '🔔', role: 'ALL' },
-  { name: 'Tim', href: '/team', icon: '👥', role: 'ADMIN' },
-  { name: 'Kampanye', href: '/campaigns', icon: '🎯' },
-  { name: 'Pilar Konten', href: '/pillars', icon: '🏛️' },
-  { name: 'Tag', href: '/tags', icon: '🏷️' },
-  { name: 'Tim', href: '/team', icon: '👥' },
-  { name: 'Pengaturan', href: '/settings', icon: '⚙️' },
 ];
 
 export function Sidebar() {
