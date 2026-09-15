@@ -114,7 +114,8 @@ export default function ContentDetailPage({ params }: { params: { id: string } }
               <p className="text-xs text-zinc-500">Akan membuat Google Doc baru di folder klien berdasarkan template Brief.</p>
             </div>
           </CardContent>
-        </
+        </Card>
+      </div>
       {/* Drive Assets */}
       {(content.driveFolders?.length > 0 || content.generatedDocs?.length > 0) && (
         <Card className="mt-6 border-blue-100 shadow-sm">
