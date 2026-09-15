@@ -148,8 +148,6 @@ export default function ContentDetailPage({ params }: { params: { id: string } }
           </CardContent>
         </Card>
       )}
-Card>
-      </div>
 
       <div className="mt-6">
         <Card>
