@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 
 export function extractVariables(template: string): string[] {
   const regex = /{{([\w.|]+)}}/g;
-  const matches = [...template.matchAll(regex)];
+  const matches = Array.from(template.matchAll(regex));
   return [...new Set(matches.map(m => m[1]))];
 }
 
