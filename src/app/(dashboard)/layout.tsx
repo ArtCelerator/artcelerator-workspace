@@ -17,11 +17,11 @@ export default async function DashboardLayout({
   }
 
   // Auto create or get default workspace
-  const { workspace } = await getOrCreateDefaultWorkspace(session.user.id);
+  const { workspace, role } = await getOrCreateDefaultWorkspace(session.user.id);
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50">
-      <Sidebar />
+      <Sidebar role={role} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar user={session.user} workspaceName={workspace.name} />
         <main className="flex-1 overflow-y-auto">
