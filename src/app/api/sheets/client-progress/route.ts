@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { clientId, emailToShare } = body;
 
-    const accessToken = await getValidAccessToken(session.user.id, workspace.id);
+    const accessToken = await getValidAccessToken(workspace.ownerId, workspace.id);
     if (!accessToken) return NextResponse.json({ error: 'Google Not Connected' }, { status: 400 });
 
     const client = await prisma.client.findUnique({ where: { id: clientId } });

@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     
     if (!file) return NextResponse.json({ error: 'No file' }, { status: 400 });
 
-    const accessToken = await getValidAccessToken(session.user.id, workspace.id);
+    const accessToken = await getValidAccessToken(workspace.ownerId, workspace.id);
     if (!accessToken) return NextResponse.json({ error: 'Google Not Connected' }, { status: 400 });
 
     // Determine destination Google Drive folder ID

@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
     }
 
-    const accessToken = await getValidAccessToken(session.user.id, workspace.id);
+    const accessToken = await getValidAccessToken(workspace.ownerId, workspace.id);
     if (!accessToken) return NextResponse.json({ error: 'Google Not Connected' }, { status: 400 });
 
     const sheets = getSheetsClient(accessToken);

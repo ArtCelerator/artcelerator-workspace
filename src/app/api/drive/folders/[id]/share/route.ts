@@ -17,7 +17,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     const folder = await prisma.driveFolder.findUnique({ where: { id: params.id } });
     if (!folder || folder.workspaceId !== workspace.id) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-    const accessToken = await getValidAccessToken(session.user.id, workspace.id);
+    const accessToken = await getValidAccessToken(workspace.ownerId, workspace.id);
     if (!accessToken) return NextResponse.json({ error: 'Google Not Connected' }, { status: 400 });
 
     const drive = getDriveClient(accessToken);

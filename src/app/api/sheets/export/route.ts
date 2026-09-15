@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { clientId, projectId, month, year, autoSync } = body;
 
-    const accessToken = await getValidAccessToken(session.user.id, workspace.id);
+    const accessToken = await getValidAccessToken(workspace.ownerId, workspace.id);
     if (!accessToken) return NextResponse.json({ error: 'Google Not Connected' }, { status: 400 });
 
     const where: any = { workspaceId: workspace.id };

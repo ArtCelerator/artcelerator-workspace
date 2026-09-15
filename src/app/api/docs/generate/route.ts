@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const template = await prisma.docTemplate.findUnique({ where: { id: templateId } });
     if (!template || template.workspaceId !== workspace.id) return NextResponse.json({ error: 'Template not found' }, { status: 404 });
 
-    const accessToken = await getValidAccessToken(session.user.id, workspace.id);
+    const accessToken = await getValidAccessToken(workspace.ownerId, workspace.id);
     if (!accessToken) return NextResponse.json({ error: 'Google Not Connected' }, { status: 400 });
 
     // Generate snapshot data
