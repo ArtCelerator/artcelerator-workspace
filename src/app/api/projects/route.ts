@@ -17,8 +17,8 @@ export async function GET(req: Request) {
     const search = searchParams.get('search');
 
     let whereClause: any = { workspaceId: workspace.id, status: { not: 'CANCELLED' } };
-    if (clientId) whereClause.clientId = clientId;
-    if (status) whereClause.status = status;
+    if (clientId && clientId !== 'ALL') whereClause.clientId = clientId;
+    if (status && status !== 'ALL') whereClause.status = status;
     if (search) whereClause.name = { contains: search, mode: 'insensitive' };
 
     const projects = await prisma.project.findMany({
@@ -26,7 +26,8 @@ export async function GET(req: Request) {
       include: {
         client: { select: { id: true, name: true } },
         members: { include: { user: { select: { id: true, name: true, image: true } } } },
-        _count: { select: { contents: true } }
+        _count: { select: { contents: true } },
+        contents: { select: { status: true } }
       },
       orderBy: { createdAt: 'desc' }
     });
