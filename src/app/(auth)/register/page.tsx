@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -26,15 +26,18 @@ const registerSchema = z.object({
 
 type RegisterForm = z.infer<typeof registerSchema>;
 
-export default function RegisterPage() {
+function RegisterFormContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialEmail = searchParams?.get('email') || '';
+  
   const [isLoading, setIsLoading] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: '',
-      email: '',
+      email: initialEmail,
       password: '',
       confirmPassword: '',
     },
@@ -158,5 +161,13 @@ export default function RegisterPage() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Memuat...</div>}>
+      <RegisterFormContent />
+    </Suspense>
   );
 }

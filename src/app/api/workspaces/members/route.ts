@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { getOrCreateDefaultWorkspace } from '@/lib/workspace';
+import { sendTeamInviteEmail } from '@/lib/email';
 
 export async function GET(req: Request) {
   try {
@@ -37,13 +38,16 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { email, role: newRole } = body;
 
-    // Check if user exists
-    const userToInvite = await prisma.user.findUnique({ where: { email } });
+    let userToInvite = await prisma.user.findUnique({ where: { email } });
+    let isNewUser = false;
+    
     if (!userToInvite) {
-      return NextResponse.json({ error: 'User dengan email tersebut belum terdaftar di aplikasi.' }, { status: 404 });
+      userToInvite = await prisma.user.create({
+        data: { email, name: email.split('@')[0] }
+      });
+      isNewUser = true;
     }
 
-    // Check if already in workspace
     const existing = await prisma.workspaceMember.findFirst({
       where: { workspaceId: workspace.id, userId: userToInvite.id }
     });
@@ -57,15 +61,30 @@ export async function POST(req: Request) {
         workspaceId: workspace.id,
         userId: userToInvite.id,
         role: newRole || 'TEAM',
-        joinedAt: new Date()
+        joinedAt: isNewUser ? null : new Date()
       },
       include: {
         user: { select: { id: true, name: true, email: true, image: true } }
       }
     });
 
+    // Send email
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const inviteLink = isNewUser 
+      ? `${appUrl}/register?email=${encodeURIComponent(email)}&workspace=${workspace.id}`
+      : `${appUrl}/dashboard`;
+
+    await sendTeamInviteEmail({
+      toEmail: email,
+      inviterName: session.user.name || 'Admin',
+      workspaceName: workspace.name,
+      roleName: newRole || 'TEAM',
+      inviteLink
+    });
+
     return NextResponse.json(member);
   } catch (error) {
+    console.error('Failed to invite member:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
