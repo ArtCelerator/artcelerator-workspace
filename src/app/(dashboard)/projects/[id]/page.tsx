@@ -26,7 +26,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
   if (!project) return <div className="p-8 text-red-500">Proyek tidak ditemukan.</div>;
 
   return (
-    <div className="p-8 max-w-7xl mx-auto h-full flex flex-col space-y-6">
+    <div className="p-8 max-w-7xl mx-auto space-y-6">
       <div className="flex items-start justify-between shrink-0">
         <div>
           <Link href="/projects" className="text-sm text-zinc-500 hover:text-zinc-900 mb-2 inline-block">&larr; Kembali ke Proyek</Link>

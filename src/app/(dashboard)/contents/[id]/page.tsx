@@ -38,7 +38,7 @@ export default function ContentDetailPage({ params }: { params: { id: string } }
   }));
 
   return (
-    <div className="p-8 max-w-5xl mx-auto h-full flex flex-col space-y-6">
+    <div className="p-8 max-w-5xl mx-auto space-y-6">
       <div className="flex items-start justify-between shrink-0">
         <div>
           <Link href="/contents" className="text-sm text-zinc-500 hover:text-zinc-900 mb-2 inline-block">&larr; Kembali ke Daftar Konten</Link>

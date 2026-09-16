@@ -79,7 +79,7 @@ export default function NotificationsSettingsPage() {
   if (loading && !data) return <div className="p-8">Memuat...</div>;
 
   return (
-    <div className="p-8 max-w-4xl mx-auto h-full flex flex-col space-y-6">
+    <div className="p-8 max-w-4xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">🔔 Pengaturan Notifikasi</h1>
       
       <Card className={data?.telegramConnected ? 'border-blue-200' : ''}>
