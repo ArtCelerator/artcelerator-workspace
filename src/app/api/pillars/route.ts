@@ -14,7 +14,17 @@ export async function GET() {
     
     const pillars = await prisma.contentPillar.findMany({
       where: { workspaceId: workspace.id },
-      orderBy: { sortOrder: 'asc' }
+      include: {
+        contents: {
+          select: {
+            id: true,
+            status: true,
+            updatedAt: true,
+            client: { select: { id: true } }
+          }
+        }
+      },
+      orderBy: { percentage: 'desc' }
     });
 
     return NextResponse.json(pillars);
