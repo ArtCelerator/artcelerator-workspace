@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { WorkspaceRole } from '@/lib/constants';
 
@@ -48,15 +48,16 @@ const navigation: NavCategory[] = [
     title: 'Pengaturan',
     items: [
       { name: 'Pilar & Tag', href: '/pillars', icon: '🏛️', allowedRoles: ['ADMIN', 'CREATIVE_DIRECTOR'] },
-      { name: 'Kelola Tim', href: '/team', icon: '👥', allowedRoles: ['ADMIN'] },
-      { name: 'Integrasi', href: '/settings/integrations', icon: '🔗', allowedRoles: ['ADMIN'] },
-      { name: 'Notifikasi', href: '/settings/notifications', icon: '🔔', allowedRoles: ['ADMIN', 'CREATIVE_DIRECTOR', 'TEAM'] },
+      { name: 'Kelola Tim', href: '/settings?tab=team', icon: '👥', allowedRoles: ['ADMIN'] },
+      { name: 'Integrasi', href: '/settings?tab=integrations', icon: '🔗', allowedRoles: ['ADMIN'] },
+      
       { name: 'Pengaturan', href: '/settings', icon: '⚙️', allowedRoles: ['ADMIN'] },
     ]
   }
 ];
 
 export function Sidebar({ role = 'TEAM' }: { role?: WorkspaceRole }) {
+  const searchParams = useSearchParams();
   const pathname = usePathname();
 
   return (
@@ -79,7 +80,15 @@ export function Sidebar({ role = 'TEAM' }: { role?: WorkspaceRole }) {
                 </h3>
                 <div className="space-y-1">
                   {allowedItems.map((item) => {
-                    const isActive = pathname === item.href || (item.href !== '/' && item.href !== '/settings' && pathname.startsWith(item.href + '/'));
+                    const currentTab = searchParams?.get('tab');
+                    let isActive = false;
+                    if (item.href.includes('?tab=')) {
+                      isActive = pathname === item.href.split('?')[0] && currentTab === item.href.split('=')[1];
+                    } else if (item.href === '/settings') {
+                      isActive = pathname === '/settings' && (!currentTab || currentTab === 'workspace');
+                    } else {
+                      isActive = pathname === item.href || (item.href !== '/' && item.href !== '/settings' && pathname.startsWith(item.href + '/'));
+                    }
                     return (
                       <Link
                         key={item.name}

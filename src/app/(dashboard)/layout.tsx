@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { Sidebar } from '@/components/layout/sidebar';
+import { Suspense } from 'react';
 import { Topbar } from '@/components/layout/topbar';
 import { getOrCreateDefaultWorkspace } from '@/lib/workspace';
 
@@ -21,7 +22,9 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50">
-      <Sidebar role={role} />
+      <Suspense fallback={<div className="w-64 bg-white border-r" />}>
+        <Sidebar role={role} />
+      </Suspense>
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar user={session.user} workspaceName={workspace.name} />
         <main className="flex-1 overflow-y-auto">
