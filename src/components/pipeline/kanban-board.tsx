@@ -4,15 +4,14 @@ import { useState, useEffect } from 'react';
 import { DndContext, DragEndEvent, closestCorners } from '@dnd-kit/core';
 import { KanbanColumn } from './kanban-column';
 import { toast } from 'sonner';
-import { STATUS_LABELS } from '@/lib/constants';
 
 const COLUMNS = [
-  { id: 'IDEA', title: STATUS_LABELS['IDEA'], color: 'bg-zinc-400' },
-  { id: 'DRAFTING', title: STATUS_LABELS['DRAFTING'], color: 'bg-blue-500' },
-  { id: 'REVIEW', title: STATUS_LABELS['REVIEW'], color: 'bg-yellow-500' },
-  { id: 'SCHEDULED', title: STATUS_LABELS['SCHEDULED'], color: 'bg-purple-500' },
-  { id: 'PUBLISHED', title: STATUS_LABELS['PUBLISHED'], color: 'bg-emerald-500' },
-  { id: 'ARCHIVED', title: STATUS_LABELS['ARCHIVED'], color: 'bg-zinc-600' },
+  { id: 'IDEA', title: 'IDE', icon: '💡', color: 'bg-zinc-200', textCol: 'text-zinc-700' },
+  { id: 'DRAFTING', title: 'DRAFTING', icon: '✍️', color: 'bg-blue-100', textCol: 'text-blue-700' },
+  { id: 'REVIEW', title: 'REVIEW', icon: '👀', color: 'bg-amber-100', textCol: 'text-amber-800' },
+  { id: 'SCHEDULED', title: 'DIJADWALKAN', icon: '📅', color: 'bg-indigo-100', textCol: 'text-indigo-800' },
+  { id: 'PUBLISHED', title: 'PUBLISHED', icon: '✅', color: 'bg-emerald-100', textCol: 'text-emerald-800' },
+  { id: 'ARCHIVED', title: 'ARSIP', icon: '📦', color: 'bg-zinc-200', textCol: 'text-zinc-600' },
 ];
 
 export function KanbanBoard({ initialContents, onStatusChange }: { initialContents: any[], onStatusChange: () => void }) {
@@ -58,13 +57,15 @@ export function KanbanBoard({ initialContents, onStatusChange }: { initialConten
 
   return (
     <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
-      <div className="flex h-full gap-4 overflow-x-auto pb-4">
+      <div className="flex gap-4 min-w-max items-start h-full pb-4">
         {COLUMNS.map(col => (
           <KanbanColumn
             key={col.id}
             id={col.id}
             title={col.title}
-            colorClass={col.color}
+            icon={col.icon}
+            badgeColor={col.color}
+            badgeText={col.textCol}
             contents={contents.filter(c => c.status === col.id)}
           />
         ))}
