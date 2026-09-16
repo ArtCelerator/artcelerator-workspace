@@ -48,7 +48,7 @@ const navigation: NavCategory[] = [
     title: 'Pengaturan',
     items: [
       { name: 'Pilar & Tag', href: '/pillars', icon: '🏛️', allowedRoles: ['ADMIN', 'CREATIVE_DIRECTOR'] },
-      { name: 'Kelola Tim', href: '/settings?tab=team', icon: '👥', allowedRoles: ['ADMIN'] },
+      { name: 'Kelola Tim', href: '/team', icon: '👥', allowedRoles: ['ADMIN'] },
       { name: 'Integrasi', href: '/settings?tab=integrations', icon: '🔗', allowedRoles: ['ADMIN'] },
       
       { name: 'Pengaturan', href: '/settings', icon: '⚙️', allowedRoles: ['ADMIN'] },

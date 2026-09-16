@@ -30,14 +30,12 @@ export default function SettingsClient({ workspace, user }: { workspace: any, us
 
       <div className="flex border-b">
         <button onClick={() => setActiveTab('workspace')} className={`px-4 py-2 border-b-2 font-medium text-sm transition-colors ${activeTab === 'workspace' ? 'border-zinc-900 text-zinc-900' : 'border-transparent text-zinc-500 hover:text-zinc-700'}`}>🏢 Workspace Agensi</button>
-        <button onClick={() => setActiveTab('team')} className={`px-4 py-2 border-b-2 font-medium text-sm transition-colors ${activeTab === 'team' ? 'border-zinc-900 text-zinc-900' : 'border-transparent text-zinc-500 hover:text-zinc-700'}`}>👥 Kelola Tim & Role</button>
         <button onClick={() => setActiveTab('integrations')} className={`px-4 py-2 border-b-2 font-medium text-sm transition-colors ${activeTab === 'integrations' ? 'border-zinc-900 text-zinc-900' : 'border-transparent text-zinc-500 hover:text-zinc-700'}`}>🔗 Integrasi Agensi</button>
         <button onClick={() => setActiveTab('profile')} className={`px-4 py-2 border-b-2 font-medium text-sm transition-colors ${activeTab === 'profile' ? 'border-zinc-900 text-zinc-900' : 'border-transparent text-zinc-500 hover:text-zinc-700'}`}>👤 Profil Admin</button>
       </div>
 
       <div className="pt-4">
         {activeTab === 'workspace' && <WorkspaceTab workspace={workspace} />}
-        {activeTab === 'team' && <TeamTab />}
         {activeTab === 'integrations' && <IntegrationsTab />}
         {activeTab === 'profile' && <ProfileTab user={user} />}
       </div>
@@ -107,147 +105,7 @@ function WorkspaceTab({ workspace }: { workspace: any }) {
   );
 }
 
-function TeamTab() {
-  const [members, setMembers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState('TEAM');
-  const [inviting, setInviting] = useState(false);
-
-  const fetchMembers = async () => {
-    const res = await fetch('/api/workspaces/members');
-    if (res.ok) setMembers(await res.json());
-    setLoading(false);
-  };
-
-  useEffect(() => { fetchMembers(); }, []);
-
-  const handleInvite = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setInviting(true);
-    const res = await fetch('/api/workspaces/members', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: inviteEmail, role: inviteRole })
-    });
-    
-    if (res.ok) {
-      toast.success('Anggota berhasil diundang dan ditambahkan!');
-      setInviteEmail('');
-      fetchMembers();
-    } else {
-      const err = await res.json();
-      toast.error(err.error || 'Gagal mengundang anggota.');
-    }
-    setInviting(false);
-  };
-
-  const handleChangeRole = async (memberId: string, newRole: string) => {
-    const res = await fetch(`/api/workspaces/members/${memberId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ role: newRole })
-    });
-    if (res.ok) {
-      toast.success('Role berhasil diperbarui!');
-      fetchMembers();
-    } else {
-      const err = await res.json();
-      toast.error(err.error || 'Gagal mengubah role.');
-    }
-  };
-
-  const handleRemove = async (memberId: string) => {
-    if (!confirm('Hapus anggota ini dari workspace?')) return;
-    const res = await fetch(`/api/workspaces/members/${memberId}`, { method: 'DELETE' });
-    if (res.ok) {
-      toast.success('Anggota dihapus.');
-      fetchMembers();
-    } else {
-      const err = await res.json();
-      toast.error(err.error || 'Gagal menghapus anggota.');
-    }
-  };
-
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Daftar Anggota Tim</CardTitle>
-          <CardDescription>Kelola role dan akses setiap anggota di agensi Anda.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loading ? <p className="text-sm text-zinc-500">Memuat tim...</p> : (
-            <div className="overflow-x-auto border rounded-md">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-zinc-50 border-b">
-                  <tr>
-                    <th className="px-4 py-3 font-medium text-zinc-600">Nama Lengkap</th>
-                    <th className="px-4 py-3 font-medium text-zinc-600">Email</th>
-                    <th className="px-4 py-3 font-medium text-zinc-600">Bergabung</th>
-                    <th className="px-4 py-3 font-medium text-zinc-600">Role</th>
-                    <th className="px-4 py-3 font-medium text-zinc-600">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {members.map(m => (
-                    <tr key={m.id} className="bg-white">
-                      <td className="px-4 py-3 font-medium">{m.user.name}</td>
-                      <td className="px-4 py-3 text-zinc-500">{m.user.email}</td>
-                      <td className="px-4 py-3 text-zinc-500">{new Date(m.joinedAt).toLocaleDateString('id-ID')}</td>
-                      <td className="px-4 py-3">
-                        <select 
-                          className="border rounded px-2 py-1 bg-white text-sm focus:outline-none"
-                          value={m.role}
-                          onChange={(e) => handleChangeRole(m.id, e.target.value)}
-                        >
-                          <option value="ADMIN">Admin</option>
-                          <option value="CREATIVE_DIRECTOR">Creative Director</option>
-                          <option value="TEAM">Team</option>
-                        </select>
-                      </td>
-                      <td className="px-4 py-3">
-                        <button onClick={() => handleRemove(m.id)} className="text-red-500 hover:text-red-700 font-medium">Hapus</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>+ Undang Anggota Baru</CardTitle>
-          <CardDescription>Tambahkan pengguna baru ke dalam agensi ini.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleInvite} className="flex flex-col sm:flex-row gap-4 items-end max-w-2xl">
-            <div className="flex-1 w-full">
-              <label className="block text-sm font-medium mb-1">Email Pengguna</label>
-              <Input type="email" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} placeholder="email@contoh.com" required />
-            </div>
-            <div className="w-full sm:w-48 shrink-0">
-              <label className="block text-sm font-medium mb-1">Role Akses</label>
-              <select className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none" value={inviteRole} onChange={e => setInviteRole(e.target.value)}>
-                <option value="TEAM">Team</option>
-                <option value="CREATIVE_DIRECTOR">Creative Director</option>
-                <option value="ADMIN">Admin</option>
-              </select>
-            </div>
-            <Button type="submit" disabled={inviting}>{inviting ? 'Menambahkan...' : 'Tambah Anggota'}</Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-function IntegrationsTab() {
-  const [loadingGoogle, setLoadingGoogle] = useState(true);
+function IntegrationsTab() {  const [loadingGoogle, setLoadingGoogle] = useState(true);
   const [googleConnected, setGoogleConnected] = useState(false);
   const [googleInfo, setGoogleInfo] = useState<any>(null);
 
