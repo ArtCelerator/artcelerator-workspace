@@ -73,7 +73,7 @@ export function Topbar({ user, workspaceName }: TopbarProps) {
                 <p className="text-xs text-zinc-500 truncate">{user.email}</p>
               </div>
               <button
-                onClick={() => signOut({ callbackUrl: '/login' })}
+                onClick={() => signOut({ callbackUrl: '/' })}
                 className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100"
                 role="menuitem"
                 tabIndex={-1}

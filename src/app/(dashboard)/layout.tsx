@@ -14,7 +14,7 @@ export default async function DashboardLayout({
   const session = await auth();
 
   if (!session?.user) {
-    redirect('/login');
+    redirect('/');
   }
 
   // Auto create or get default workspace

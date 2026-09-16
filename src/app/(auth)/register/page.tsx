@@ -63,7 +63,7 @@ export default function RegisterPage() {
       }
 
       toast.success('Akun berhasil dibuat! Silakan masuk.');
-      router.push('/login');
+      router.push('/');
     } catch (error) {
       toast.error('Terjadi kesalahan');
     } finally {
@@ -153,7 +153,7 @@ export default function RegisterPage() {
 
       <p className="text-center text-sm text-zinc-600">
         Sudah punya akun?{' '}
-        <Link href="/login" className="font-semibold text-blue-600 hover:text-blue-500">
+        <Link href="/" className="font-semibold text-blue-600 hover:text-blue-500">
           Masuk di sini
         </Link>
       </p>

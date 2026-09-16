@@ -8,7 +8,7 @@ import { google } from 'googleapis';
 export async function GET(req: Request) {
   try {
     const session = await auth();
-    if (!session?.user) return NextResponse.redirect(new URL('/login', req.url));
+    if (!session?.user) return NextResponse.redirect(new URL('/', req.url));
 
     const { searchParams } = new URL(req.url);
     const code = searchParams.get('code');

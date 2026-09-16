@@ -6,7 +6,7 @@ import TeamClient from './client';
 
 export default async function TeamPage() {
   const session = await auth();
-  if (!session?.user) redirect('/login');
+  if (!session?.user) redirect('/');
 
   const { workspace, role } = await getOrCreateDefaultWorkspace(session.user.id);
   

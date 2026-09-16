@@ -7,7 +7,7 @@ import { getOrCreateDefaultWorkspace } from '@/lib/workspace';
 export async function GET(req: Request) {
   try {
     const session = await auth();
-    if (!session?.user) return NextResponse.redirect(new URL('/login', req.url));
+    if (!session?.user) return NextResponse.redirect(new URL('/', req.url));
 
     const { workspace, role } = await getOrCreateDefaultWorkspace(session.user.id);
     if (role !== 'ADMIN' && role !== 'CREATIVE_DIRECTOR') {
