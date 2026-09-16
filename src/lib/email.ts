@@ -57,15 +57,19 @@ export async function sendTeamInviteEmail({
       </div>
     `;
 
-    await resend.emails.send({
-      from: 'Artcelerator Workspace <onboarding@resend.dev>',
+    const response = await resend.emails.send({
+      from: 'onboarding@resend.dev',
       to: toEmail,
       subject: `${inviterName} mengundang Anda bergabung ke ${workspaceName}`,
       html: htmlBody,
     });
 
-    console.log(`Team invite email sent successfully to ${toEmail}`);
+    if (response.error) {
+      console.error('Resend API returned an error:', response.error);
+    } else {
+      console.log(`Team invite email sent successfully to ${toEmail}. Response:`, response.data);
+    }
   } catch (error) {
-    console.error('Failed to send team invite email:', error);
+    console.error('Failed to send team invite email. Exception details:', error);
   }
 }
