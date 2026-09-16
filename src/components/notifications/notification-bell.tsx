@@ -106,8 +106,8 @@ export function NotificationBell() {
           </div>
 
           <div className="p-2 border-t border-zinc-100 shrink-0 text-center">
-            <Link href="/settings/notifications" onClick={() => setIsOpen(false)} className="text-xs text-zinc-500 hover:text-zinc-900 block py-1">
-              Pengaturan Notifikasi
+            <Link href="/notifications" onClick={() => setIsOpen(false)} className="text-xs text-blue-600 hover:text-blue-700 block py-1 font-medium">
+              Lihat Semua Notifikasi
             </Link>
           </div>
         </div>
