@@ -9,6 +9,7 @@ import { MetricsForm } from '@/components/content/metrics-form';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { formatDateShort } from '@/lib/utils';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 export default function ContentDetailPage({ params }: { params: { id: string } }) {
   const [content, setContent] = useState<any>(null);
@@ -117,14 +118,14 @@ export default function ContentDetailPage({ params }: { params: { id: string } }
         </Card>
       </div>
       {/* Drive Assets */}
-      {(content.driveFolders?.length > 0 || content.generatedDocs?.length > 0) && (
-        <Card className="mt-6 border-blue-100 shadow-sm">
-          <CardHeader className="bg-blue-50/50 pb-4">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Folder className="w-5 h-5 text-blue-500" /> Google Drive Assets
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
+      <Card className="mt-6 border-blue-100 shadow-sm">
+        <CardHeader className="bg-blue-50/50 pb-4">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Folder className="w-5 h-5 text-blue-500" /> Folder Google Drive
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          {(content.driveFolders?.length > 0 || content.generatedDocs?.length > 0) ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {content.driveFolders?.map((f: any) => (
                 <a key={f.id} href={f.folderUrl} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors">
@@ -145,9 +146,30 @@ export default function ContentDetailPage({ params }: { params: { id: string } }
                 </a>
               ))}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <div className="text-center py-6">
+              <p className="text-sm text-zinc-500 mb-4">Struktur folder Drive belum dibuat untuk konten ini.</p>
+              <Button onClick={async () => {
+                try {
+                  toast.loading('Membuat folder...', { id: 'createDrive' });
+                  const res = await fetch(`/api/contents/${content.id}/drive`, { method: 'POST' });
+                  const data = await res.json();
+                  if (res.ok) {
+                    toast.success('Folder berhasil dibuat', { id: 'createDrive' });
+                    fetchContentAndMetrics();
+                  } else {
+                    toast.error(data.error || 'Gagal membuat folder', { id: 'createDrive' });
+                  }
+                } catch(e) {
+                  toast.error('Terjadi kesalahan', { id: 'createDrive' });
+                }
+              }}>
+                Buat Folder Drive Sekarang
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="mt-6">
         <Card>
