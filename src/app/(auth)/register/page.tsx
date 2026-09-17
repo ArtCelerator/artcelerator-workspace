@@ -30,6 +30,7 @@ function RegisterFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialEmail = searchParams?.get('email') || '';
+  const initialWorkspaceId = searchParams?.get('workspace') || '';
   
   const [isLoading, setIsLoading] = useState(false);
 
@@ -54,7 +55,8 @@ function RegisterFormContent() {
         body: JSON.stringify({
           name: data.name,
           email: data.email,
-          password: data.password
+          password: data.password,
+          workspaceId: initialWorkspaceId || undefined
         })
       });
 
@@ -65,8 +67,21 @@ function RegisterFormContent() {
         return;
       }
 
-      toast.success('Akun berhasil dibuat! Silakan masuk.');
-      router.push('/');
+      toast.success('Akun berhasil dibuat!');
+      
+      // Auto login after registration
+      const loginResult = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (loginResult?.error) {
+        router.push('/');
+      } else {
+        router.push('/dashboard');
+        router.refresh();
+      }
     } catch (error) {
       toast.error('Terjadi kesalahan');
     } finally {
