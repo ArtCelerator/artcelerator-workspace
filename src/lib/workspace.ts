@@ -9,9 +9,9 @@ export async function getOrCreateDefaultWorkspace(userId: string) {
 
   if (member) return { workspace: member.workspace, role: member.role };
 
-  // Generate unique slug
-  const count = await prisma.workspace.count();
-  const slug = `workspace-${count + 1}`;
+  // Generate unique slug to prevent P2002 error
+  const uniqueId = Math.random().toString(36).substring(2, 7);
+  const slug = `workspace-${Date.now()}-${uniqueId}`;
 
   const newWorkspace = await prisma.workspace.create({
     data: {

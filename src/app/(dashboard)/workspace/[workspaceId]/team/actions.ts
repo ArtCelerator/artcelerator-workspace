@@ -12,90 +12,90 @@ export async function inviteMemberToWorkspace(
   role: WorkspaceRole
 ): Promise<{ success: boolean; message?: string; error?: string }> {
   try {
-    // 1. Get current session
+    // b. Get session
     const session = await auth();
     
-    // 2. Check if user is authenticated
-    if (!session || !session.user || !session.user.id) {
-      throw new Error('Unauthorized access');
+    // c. Check if user is authenticated & email exists
+    if (!session || !session.user || !session.user.email) {
+      return { success: false, error: 'Unauthorized access or missing email' };
     }
 
-    const userId = session.user.id;
+    const userEmail = session.user.email;
 
-    // 3. Get workspace and verify it exists
+    // d. Query workspace
     const workspace = await prisma.workspace.findUnique({
       where: { id: workspaceId },
       include: {
         members: {
-          where: { userId }
+          include: {
+            user: true
+          }
         }
       }
     });
 
-    // 4. Verify workspace exists
+    // e. Verify workspace exists
     if (!workspace) {
-      throw new Error('Workspace not found');
+      return { success: false, error: 'Workspace not found' };
     }
 
-    // 5. Check user permission (is member && role is ADMIN)
-    const currentUserMember = workspace.members[0];
+    // f. Find current user in workspace.members by email
+    const currentUserMember = workspace.members.find(
+      member => member.user.email === userEmail
+    );
+
+    // g. Return error if user is not a member
     if (!currentUserMember) {
-      throw new Error('You are not a member of this workspace');
+      return { success: false, error: 'You are not a member of this workspace' };
     }
 
+    // h. Check permission
+    // i. Return error if not ADMIN
     if (currentUserMember.role !== 'ADMIN') {
-      throw new Error('Only Admin can invite new members');
+      return { success: false, error: 'Only workspace admins can invite new members' };
     }
 
-    // 7. Validate email format with basic regex
+    // j. Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      throw new Error('Invalid email format');
+      return { success: false, error: 'Invalid email format' };
     }
 
-    // 6. Check if email already member
-    // First find if the user exists in the system by email
-    const invitedUser = await prisma.user.findUnique({
-      where: { email }
-    });
+    // k. Check if email already member
+    const existingMember = workspace.members.find(
+      member => member.user.email === email
+    );
 
-    if (invitedUser) {
-      // Check if they are already in the workspace
-      const existingMember = await prisma.workspaceMember.findFirst({
-        where: {
-          workspaceId,
-          userId: invitedUser.id
-        }
-      });
-
-      if (existingMember) {
-        return { success: false, error: 'User is already a member of this workspace' };
-      }
+    // l. Return error if already member
+    if (existingMember) {
+      return { success: false, error: 'User is already a member of this workspace' };
     }
 
-    // 8. Get current user data for inviterName
-    const inviterName = session.user.name || 'A team member';
-
-    // 9. Generate invite link
+    // m. Generate invite link
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    // Using encodeURIComponent to safely encode the email and role
     const inviteLink = `${appUrl}/register?email=${encodeURIComponent(email)}&workspace=${encodeURIComponent(workspaceId)}&role=${encodeURIComponent(role)}`;
 
-    // 10. Call sendInvitationEmail()
+    // n. Get inviter name
+    const inviterName = session.user.name || session.user.email || 'Team Admin';
+
+    // o. Map role to display name
+    let roleDisplayName = 'Team Member';
+    if (role === 'ADMIN') roleDisplayName = 'Admin';
+    else if (role === 'CREATIVE_DIRECTOR') roleDisplayName = 'Creative Director';
+
+    // p. Call sendInvitationEmail
     await sendInvitationEmail({
       to: email,
       inviterName,
       workspaceName: workspace.name,
-      role: role.toString().replace(/_/g, ' '),
+      role: roleDisplayName,
       inviteLink
     });
 
-    // 11. Revalidate path
+    // q. Revalidate path
     revalidatePath(`/workspace/${workspaceId}/team`);
-    revalidatePath(`/dashboard/workspace/${workspaceId}/team`);
-    revalidatePath(`/team`);
 
-    // 12. Return success response
+    // r. Return success
     return { 
       success: true, 
       message: `Invitation successfully sent to ${email}`

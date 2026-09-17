@@ -5,16 +5,23 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { Loader2, UserPlus } from 'lucide-react';
 import { WorkspaceRole } from '@prisma/client';
+import { Loader2, UserPlus } from 'lucide-react';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { inviteMemberToWorkspace } from '@/app/(dashboard)/workspace/[workspaceId]/team/actions';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger,
+  DialogDescription,
+  DialogFooter
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-import { inviteMemberToWorkspace } from '@/app/(dashboard)/workspace/[workspaceId]/team/actions';
 
 const inviteMemberSchema = z.object({
   email: z.string().email('Email tidak valid'),
@@ -46,7 +53,7 @@ export function InviteMemberDialog({ workspaceId, workspaceName, onSuccess }: In
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     if (!newOpen) {
-      reset(); // Reset form when closing
+      reset();
     }
   };
 
@@ -83,6 +90,9 @@ export function InviteMemberDialog({ workspaceId, workspaceName, onSuccess }: In
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Invite Member to {workspaceName}</DialogTitle>
+          <DialogDescription>
+            Kirim undangan email ke anggota tim baru untuk bergabung ke workspace ini.
+          </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-4">
@@ -96,7 +106,7 @@ export function InviteMemberDialog({ workspaceId, workspaceName, onSuccess }: In
               {...register('email')} 
             />
             {errors.email && (
-              <p className="text-sm text-red-500 font-medium">{errors.email.message}</p>
+              <p className="text-sm text-red-600 font-medium">{errors.email.message}</p>
             )}
           </div>
 
@@ -113,15 +123,15 @@ export function InviteMemberDialog({ workspaceId, workspaceName, onSuccess }: In
               <SelectContent>
                 <SelectItem value="ADMIN">Admin</SelectItem>
                 <SelectItem value="CREATIVE_DIRECTOR">Creative Director</SelectItem>
-                <SelectItem value="TEAM">Team</SelectItem>
+                <SelectItem value="TEAM">Team Member</SelectItem>
               </SelectContent>
             </Select>
             {errors.role && (
-              <p className="text-sm text-red-500 font-medium">{errors.role.message}</p>
+              <p className="text-sm text-red-600 font-medium">{errors.role.message}</p>
             )}
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-2">
+          <DialogFooter className="pt-2">
             <Button 
               type="button" 
               variant="outline" 
@@ -140,7 +150,7 @@ export function InviteMemberDialog({ workspaceId, workspaceName, onSuccess }: In
                 'Send Invitation'
               )}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

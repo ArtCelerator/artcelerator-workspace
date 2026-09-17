@@ -19,7 +19,7 @@ export interface GASEmailResponse {
 }
 
 /**
- * Executes a fetch request with a timeout.
+ * Executes a fetch request with a timeout using AbortController.
  */
 async function fetchWithTimeout(resource: string, options: RequestInit & { timeout?: number }): Promise<Response> {
   const { timeout = 30000 } = options;
@@ -27,13 +27,23 @@ async function fetchWithTimeout(resource: string, options: RequestInit & { timeo
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
   
-  const response = await fetch(resource, {
-    ...options,
-    signal: controller.signal
-  });
-  clearTimeout(id);
-  
-  return response;
+  try {
+    const response = await fetch(resource, {
+      ...options,
+      signal: controller.signal
+    });
+    return response;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+/**
+ * Validates an email address format using regex.
+ */
+function isValidEmail(email: string): boolean {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
 }
 
 /**
@@ -42,8 +52,19 @@ async function fetchWithTimeout(resource: string, options: RequestInit & { timeo
  */
 export async function sendInvitationEmail(params: SendInvitationEmailParams): Promise<void> {
   const webhookUrl = process.env.GAS_EMAIL_WEBHOOK_URL;
+  
   if (!webhookUrl) {
     throw new Error('Environment variable GAS_EMAIL_WEBHOOK_URL is not set.');
+  }
+
+  // Validate parameters
+  if (!params.to || !params.inviterName || !params.workspaceName || !params.role || !params.inviteLink) {
+    throw new Error('All parameters (to, inviterName, workspaceName, role, inviteLink) are required.');
+  }
+
+  // Validate email format
+  if (!isValidEmail(params.to)) {
+    throw new Error('Invalid email format provided.');
   }
 
   const payload = {
@@ -52,7 +73,8 @@ export async function sendInvitationEmail(params: SendInvitationEmailParams): Pr
   };
 
   const maxRetries = 3;
-  const baseDelay = 1000;
+  // exponential backoff delays: 2s, 4s, 8s
+  const delays = [2000, 4000, 8000];
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
@@ -87,8 +109,7 @@ export async function sendInvitationEmail(params: SendInvitationEmailParams): Pr
         throw new Error(`Failed to send email after ${maxRetries} attempts: ${error.message}`);
       }
       
-      // Exponential backoff
-      const delay = baseDelay * Math.pow(2, attempt - 1);
+      const delay = delays[attempt - 1];
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
