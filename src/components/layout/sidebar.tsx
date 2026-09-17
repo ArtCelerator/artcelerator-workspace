@@ -25,6 +25,7 @@ const navigation: NavCategory[] = [
       { name: 'Kalender', href: '/calendar', icon: '📅', allowedRoles: ['ADMIN', 'CREATIVE_DIRECTOR', 'TEAM'] },
       { name: 'Pipeline', href: '/pipeline', icon: '🔄', allowedRoles: ['ADMIN', 'CREATIVE_DIRECTOR', 'TEAM'] },
       { name: 'Konten', href: '/contents', icon: '📝', allowedRoles: ['ADMIN', 'CREATIVE_DIRECTOR', 'TEAM'] },
+      { name: 'Notifikasi', href: '/notifications', icon: '🔔', allowedRoles: ['ADMIN', 'CREATIVE_DIRECTOR', 'TEAM'] },
     ]
   },
   {
